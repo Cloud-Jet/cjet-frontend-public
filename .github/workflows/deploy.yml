@@ -1,0 +1,132 @@
+name: Deploy CloudJet Frontend to S3 and CloudFront
+
+on:
+  push:
+    branches: [ main, production, frontend/ch ]
+    paths: 
+      - '**'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: 'ap-northeast-2'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup environment
+      run: |
+        echo "Setting up deployment environment..."
+        echo "AWS Region: ${{ env.AWS_REGION }}"
+        echo "Environment ready for deployment"
+        
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+        
+    - name: Set environment variables
+      run: |
+        # 기존 S3 버킷 사용
+        echo "DEPLOY_ENV=production" >> $GITHUB_ENV
+        echo "S3_BUCKET=cloudjet-id-frontend-hosting" >> $GITHUB_ENV
+        echo "CLOUDFRONT_DISTRIBUTION_ID=${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}" >> $GITHUB_ENV
+        
+    - name: Build frontend
+      run: |
+        echo "Frontend build completed - Static files ready for deployment"
+        echo "Environment: $DEPLOY_ENV"
+        echo "S3 Bucket: $S3_BUCKET"
+        
+    - name: Optimize static files
+      run: |
+        echo "Starting static file optimization..."
+        
+        # CSS 파일 최적화
+        if [ -d "css" ]; then
+          find css -name "*.css" -type f -exec gzip -k {} \;
+          echo "CSS files optimized with gzip"
+        else
+          echo "CSS directory not found, skipping CSS optimization"
+        fi
+        
+        # JS 파일 최적화  
+        if [ -d "js" ]; then
+          find js -name "*.js" -type f -exec gzip -k {} \;
+          echo "JS files optimized with gzip"
+        else
+          echo "JS directory not found, skipping JS optimization"
+        fi
+        
+        # HTML 파일 최적화
+        find . -name "*.html" -type f -exec gzip -k {} \;
+        echo "HTML files optimized with gzip"
+        
+        echo "Static file optimization completed successfully!"
+        
+    - name: Deploy to S3
+      run: |
+        echo "Starting S3 deployment to bucket: $S3_BUCKET"
+        
+        # S3 동기화 (캐시 헤더 설정 포함)
+        aws s3 sync . s3://$S3_BUCKET \
+          --delete \
+          --exclude "*.git*" \
+          --exclude ".github/*" \
+          --exclude "README.md" \
+          --exclude "*.md" \
+          --exclude "setup-github.md" \
+          --cache-control "max-age=31536000" \
+          --metadata-directive REPLACE
+        
+        echo "S3 sync completed"
+        
+        # HTML 파일은 짧은 캐시 설정
+        aws s3 cp . s3://$S3_BUCKET \
+          --recursive \
+          --exclude "*" \
+          --include "*.html" \
+          --cache-control "max-age=300" \
+          --content-type "text/html" \
+          --metadata-directive REPLACE
+        
+        echo "HTML files cache updated"
+        
+        # CSS/JS 파일은 중간 캐시 설정
+        aws s3 cp . s3://$S3_BUCKET \
+          --recursive \
+          --exclude "*" \
+          --include "*.css" \
+          --include "*.js" \
+          --cache-control "max-age=86400" \
+          --metadata-directive REPLACE
+        
+        echo "CSS/JS files cache updated"
+        echo "S3 deployment completed successfully!"
+        
+    - name: Invalidate CloudFront
+      run: |
+        # 전체 캐시 무효화 (비용 고려하여 특정 경로만 설정 가능)
+        aws cloudfront create-invalidation \
+          --distribution-id $CLOUDFRONT_DISTRIBUTION_ID \
+          --paths "/*"
+          
+        echo "CloudFront cache invalidation initiated"
+        
+    - name: Deployment Summary
+      run: |
+        echo "🚀 Deployment Summary"
+        echo "Environment: $DEPLOY_ENV"
+        echo "S3 Bucket: $S3_BUCKET"
+        echo "CloudFront Distribution: $CLOUDFRONT_DISTRIBUTION_ID"
+        echo "✅ Deployment completed successfully!"
+        
+        echo "🌐 CloudFront URL: https://d7aq35kj9vr3c.cloudfront.net"
+        echo "🌐 Custom Domain: https://www.cloudjet.click"
+        echo "📝 CloudFront 배포 완료까지 5-10분 소요될 수 있습니다."

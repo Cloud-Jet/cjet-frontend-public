@@ -1,0 +1,555 @@
+/* style.css - 메인 스타일시트 */
+
+/* 리셋 및 기본 스타일 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+/* 헤더 스타일 */
+header {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #057beb;
+    text-decoration: none;
+}
+
+.logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: #057beb;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+/* 버튼 스타일 */
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 2px solid #057beb;
+    color: #057beb;
+}
+
+.btn-outline:hover {
+    background-color: #057beb;
+    color: white;
+}
+
+.btn-primary {
+    background-color: #057beb;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0569d4;
+}
+
+/* 메인 콘텐츠 스타일 */
+main {
+    margin-top: 80px;
+    min-height: calc(100vh - 80px);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 5%;
+}
+
+/* 히어로 섹션 */
+.hero {
+    background: linear-gradient(135deg, #057beb 0%, #0569d4 100%);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+/* 검색 폼 */
+.search-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin: -3rem auto 3rem;
+    max-width: 900px;
+}
+
+.trip-type {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.trip-type label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.trip-type input[type="radio"] {
+    margin-right: 0.5rem;
+}
+
+.search-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #666;
+}
+
+.input-group input,
+.input-group select {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    outline: none;
+    border-color: #057beb;
+}
+
+.search-button {
+    width: 100%;
+    padding: 1rem;
+    font-size: 18px;
+}
+
+/* 로딩 스피너 */
+.loading {
+    display: none;
+    text-align: center;
+    padding: 3rem;
+}
+
+.spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #057beb;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 모달 기본 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: #fefefe;
+    padding: 2rem;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    padding: 0;
+}
+
+.modal-close:hover {
+    color: #333;
+}
+
+/* 폼 스타일 */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #057beb;
+}
+
+/* 검색 결과 페이지 */
+.search-results {
+    display: none;
+    background-color: #f5f7fa;
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.flight-list {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 5%;
+}
+
+.flight-item {
+    background: white;
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: box-shadow 0.3s;
+}
+
+.flight-item:hover {
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.flight-info {
+    flex: 1;
+}
+
+.flight-route {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+}
+
+.flight-time {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.flight-airport {
+    font-size: 14px;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+.flight-arrow {
+    font-size: 20px;
+    color: #057beb;
+    margin: 0 1rem;
+}
+
+.flight-details {
+    display: flex;
+    gap: 2rem;
+    color: #666;
+    font-size: 14px;
+}
+
+.flight-price {
+    text-align: right;
+    min-width: 150px;
+}
+
+.price-amount {
+    font-size: 24px;
+    font-weight: bold;
+    color: #057beb;
+    margin-bottom: 1rem;
+}
+
+/* 예약 프로세스 */
+.booking-process {
+    display: none;
+    background-color: #f5f7fa;
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.booking-steps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    position: relative;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.booking-steps::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #ddd;
+    z-index: 1;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ddd;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.step.active .step-number {
+    background: #057beb;
+}
+
+.step.completed .step-number {
+    background: #27ae60;
+}
+
+.step-title {
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+}
+
+/* 좌석 선택 */
+.seat-map {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* A B C 통로 D E F = 7열 */
+    gap: 8px;
+    max-width: 500px;
+    margin: 2rem auto;
+}
+
+.seat {
+    width: 45px;
+    height: 40px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+    transition: all 0.3s;
+    user-select: none;
+    background: white;
+}
+
+.seat.aisle {
+    width: 20px;
+    border: none;
+    background: none;
+    cursor: default;
+}
+
+.seat:hover:not(.occupied):not(.aisle) {
+    border-color: #057beb;
+    background-color: #e6f2ff;
+}
+
+.seat.selected {
+    background-color: #057beb;
+    color: white;
+    border-color: #057beb;
+}
+
+.seat.occupied {
+    background-color: #e74c3c;
+    color: white;
+    border-color: #e74c3c;
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.seat.occupied:hover {
+    background-color: #e74c3c !important;
+    border-color: #e74c3c !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+
+.seat-legend {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.legend-seat {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ddd;
+    border-radius: 3px;
+}
+
+.legend-seat.available {
+    background: white;
+}
+
+.legend-seat.selected {
+    background: #057beb;
+    border-color: #057beb;
+}
+
+.legend-seat.occupied {
+    background: #e74c3c;
+    border-color: #e74c3c;
+}
+
+/* 승객 정보 폼 */
+.passenger-forms {
+    margin: 2rem 0;
+}
+
+.passenger-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.passenger-form h4 {
+    margin-bottom: 1rem;
+    color: #057beb;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 0.5rem;
+}
+
+.passenger-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}

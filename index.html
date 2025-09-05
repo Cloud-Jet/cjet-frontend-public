@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudJet - 항공 예약 시스템 v3.0</title>
+    
+    <!-- SEO 및 성능 최적화 -->
+    <meta name="description" content="CloudJet - 최고의 가격으로 항공편을 예약하세요. 간편한 예약 시스템과 최상의 서비스를 제공합니다.">
+    <meta name="keywords" content="항공권, 항공편 예약, 여행, 항공사, CloudJet">
+    <meta name="author" content="CloudJet">
+    
+    <!-- 캐시 최적화 -->
+    <meta http-equiv="Cache-Control" content="public, max-age=300">
+    <meta http-equiv="Expires" content="300">
+    
+    <!-- 프리로드 설정 -->
+    <link rel="preload" href="css/style.css" as="style">
+    <link rel="preload" href="js/config.js" as="script">
+    <link rel="preload" href="js/storage.js" as="script">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <script src="https://js.bootpay.co.kr/bootpay-4.3.4.min.js"></script>
+    <!-- 환경 설정을 가장 먼저 로드 -->
+    <script src="js/config.js"></script>
+    <!-- 헤더 -->
+    <header>
+        <nav>
+            <button type="button" class="logo" onclick="navigateToHome(event)">
+                <img src="images/logo.svg" alt="CloudJet Logo">
+                CloudJet
+            </button>
+            <div class="nav-links">
+                <button type="button" onclick="navigateToHome(event)">예약</button>
+                <button type="button" onclick="navigateToBookingList(event)">예약 조회</button>
+                <button type="button" onclick="navigateToMyPage(event)">마이페이지</button>
+            </div>
+            <div class="auth-buttons" id="authButtons">
+                <button class="btn btn-outline" onclick="showLoginModal()">로그인</button>
+                <button class="btn btn-primary" onclick="showSignupModal()">회원가입</button>
+            </div>
+            <div class="auth-buttons" id="loggedInButtons" style="display: none;">
+                <span id="userName" style="margin-right: 1rem;"></span>
+                <button class="btn btn-outline" onclick="logout()">로그아웃</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- 메인 콘텐츠 -->
+    <main>
+        <!-- 홈 페이지 -->
+        <section id="homePage">
+            <div class="hero">
+                <div class="container">
+                    <h1>CloudJet과 함께 떠나는 하늘 여행 v4.0</h1>
+                    <p>최고의 가격으로 최상의 서비스를 경험하세요</p>
+                </div>
+            </div>
+
+            <div class="container">
+                <!-- 검색 폼 -->
+                <div class="search-form">
+                    <div class="trip-type">
+                        <label>
+                            <input type="radio" name="tripType" value="oneway" checked>
+                            편도
+                        </label>
+                        <label>
+                            <input type="radio" name="tripType" value="roundtrip">
+                            왕복
+                        </label>
+                    </div>
+                    
+                    <div class="search-inputs">
+                        <div class="input-group">
+                            <label>출발지</label>
+                            <select id="departure">
+                                <option value="ICN">서울/인천</option>
+                                <option value="GMP">서울/김포</option>
+                                <option value="NRT">도쿄/나리타</option>
+                                <option value="KIX">오사카/간사이</option>
+                                <option value="BKK">방콕</option>
+                                <option value="SYD">시드니</option>
+                                <option value="LAX">로스앤젤레스</option>
+                                <option value="CDG">파리</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>도착지</label>
+                            <select id="arrival">
+                                <option value="NRT">도쿄/나리타</option>
+                                <option value="ICN">서울/인천</option>
+                                <option value="GMP">서울/김포</option>
+                                <option value="KIX">오사카/간사이</option>
+                                <option value="BKK">방콕</option>
+                                <option value="SYD">시드니</option>
+                                <option value="LAX">로스앤젤레스</option>
+                                <option value="CDG">파리</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>가는 날</label>
+                            <input type="date" id="departureDate" required>
+                        </div>
+                        
+                        <div class="input-group" id="returnDateGroup" style="display: none;">
+                            <label>오는 날</label>
+                            <input type="date" id="returnDate">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>탑승객</label>
+                            <select id="passengers">
+                                <option value="1">1명</option>
+                                <option value="2">2명</option>
+                                <option value="3">3명</option>
+                                <option value="4">4명</option>
+                                <option value="5">5명</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary search-button" onclick="searchFlights()">
+                        항공편 검색
+                    </button>
+                </div>
+
+                <!-- 프로모션 섹션 -->
+                <div class="promotions">
+                    <h2>오늘의 특가 항공권</h2>
+                    <div class="promotion-grid" id="promotionGrid">
+                        <!-- 프로모션 카드들이 여기에 동적으로 추가됨 -->
+                    </div>
+                </div>
+
+                <!-- 인기 노선 섹션 -->
+                <div class="popular-routes">
+                    <h2>인기 노선 TOP 5</h2>
+                    <div class="route-list" id="popularRoutes">
+                        <!-- 인기 노선들이 여기에 동적으로 추가됨 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 검색 결과 페이지 -->
+        <section id="searchResultsPage" class="search-results" style="display: none;">
+            <div class="container">
+                <h2>항공편 검색 결과</h2>
+                <div class="loading" id="searchLoading">
+                    <div class="spinner"></div>
+                    <p>항공편을 검색중입니다...</p>
+                </div>
+                <div class="flight-list" id="flightList">
+                    <!-- 검색 결과가 여기에 동적으로 추가됨 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 예약 프로세스 페이지 -->
+        <section id="bookingProcessPage" class="booking-process" style="display: none;">
+            <div class="container">
+                <div class="booking-steps">
+                    <div class="step active" id="step1">
+                        <div class="step-number">1</div>
+                        <div class="step-title">항공편 확인</div>
+                    </div>
+                    <div class="step" id="step2">
+                        <div class="step-number">2</div>
+                        <div class="step-title">승객 정보</div>
+                    </div>
+                    <div class="step" id="step3">
+                        <div class="step-number">3</div>
+                        <div class="step-title">좌석 선택</div>
+                    </div>
+                    <div class="step" id="step4">
+                        <div class="step-number">4</div>
+                        <div class="step-title">결제</div>
+                    </div>
+                </div>
+
+                <div id="bookingContent">
+                    <!-- 예약 단계별 콘텐츠가 여기에 동적으로 추가됨 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 마이페이지 -->
+        <section id="myPage" class="mypage" style="display: none;">
+            <div class="container">
+                <h2>마이페이지</h2>
+                <div class="user-info">
+                    <h3>회원 정보</h3>
+                    <div class="info-grid" id="userInfoGrid">
+                        <!-- 사용자 정보가 여기에 동적으로 추가됨 -->
+                    </div>
+                    <div style="margin-top: 2rem;">
+                        <button class="btn btn-outline" onclick="showEditProfileModal()">정보 수정</button>
+                        <button class="btn btn-outline" onclick="showChangePasswordModal()">비밀번호 변경</button>
+                    </div>
+                </div>
+
+                <div class="booking-list">
+                    <h3>나의 예약 내역</h3>
+                    <div id="myBookingList">
+                        <!-- 예약 내역이 여기에 동적으로 추가됨 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 예약 조회 페이지 -->
+    <section id="bookingListPage" class="booking-list" style="display: none;">
+        <div class="container">
+            <h2>예약 조회</h2>
+            <div id="bookingListContent">
+                <!-- 예약 목록이 여기에 동적으로 추가됨 -->
+            </div>
+        </div>
+    </section>
+
+    <!-- 로그인 모달 -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>로그인</h2>
+                <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+            </div>
+            <form onsubmit="login(event)">
+                <div class="form-group">
+                    <label>이메일</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>비밀번호</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">로그인</button>
+            </form>
+            <p style="text-align: center; margin-top: 1rem;">
+                계정이 없으신가요? <a href="#" onclick="showSignupModal()" style="color: #057beb;">회원가입</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- 회원가입 모달 -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>회원가입</h2>
+                <button class="modal-close" onclick="closeModal('signupModal')">&times;</button>
+            </div>
+            <form onsubmit="signup(event)">
+                <div class="form-group">
+                    <label>이름</label>
+                    <input type="text" id="signupName" required>
+                </div>
+                <div class="form-group">
+                    <label>이메일</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>비밀번호</label>
+                    <input type="password" id="signupPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>비밀번호 확인</label>
+                    <input type="password" id="signupPasswordConfirm" required>
+                </div>
+                <div class="form-group">
+                    <label>휴대폰</label>
+                    <input type="tel" id="signupPhone" placeholder="010-1234-5678" required>
+                </div>
+                <div class="form-group">
+                    <label>생년월일</label>
+                    <input type="date" id="signupBirthDate" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">회원가입</button>
+            </form>
+            <p style="text-align: center; margin-top: 1rem;">
+                이미 계정이 있으신가요? <a href="#" onclick="showLoginModal()" style="color: #057beb;">로그인</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- JavaScript 파일들 -->
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/pages.js"></script>
+    <script src="js/flight.js"></script>
+    <script src="js/booking.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
