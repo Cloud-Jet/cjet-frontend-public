@@ -18,7 +18,6 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for better analysis
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v3
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub에서 자동 제공
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}     # 이미 설정한 토큰
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
