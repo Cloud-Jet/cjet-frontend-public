@@ -1,271 +1,422 @@
-# cjet-frontend
-## **CloudJet Frontend 클라우드 인프라 구축 프로젝트**
+# ✈️ CloudJet Frontend - 항공편 예약 시스템
 
-**�� 프로젝트 개요**
+> **현대적인 항공편 예약 시스템의 프론트엔드**  
+> HTML5 + Vanilla JS + AWS CloudFront를 활용한 글로벌 정적 웹사이트
 
-**목표**: 정적 웹사이트를 AWS 클라우드 인프라에 배포하여 글로벌 CDN 구축
-
-**기간**: 2025년 8월 18일
-
-**결과**: 완벽한 CI/CD 파이프라인과 커스텀 도메인 구축 완료
+[![CI/CD](https://github.com/Cloud-Jet/cjet-frontend-public/workflows/Deploy/badge.svg)](https://github.com/Cloud-Jet/cjet-frontend-public/actions)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-blue)](https://www.cloudjet.click)
 
 ---
 
-## **��️ 구축된 인프라 아키텍처**
+## 📋 **프로젝트 개요**
 
-### **1. 핵심 서비스 구성**
+CloudJet Frontend는 현대적인 항공편 예약 시스템의 사용자 인터페이스를 제공하는 **정적 웹 애플리케이션**입니다.  
+AWS 클라우드 인프라와 완전 자동화된 CI/CD 파이프라인을 통해 전 세계 사용자에게 빠르고 안전한 서비스를 제공합니다.
 
-- **S3 (Simple Storage Service)**: 정적 웹사이트 호스팅
-- **CloudFront**: 글로벌 CDN 및 캐싱
-- **Route 53**: DNS 관리 및 커스텀 도메인
-- **ACM (AWS Certificate Manager)**: SSL 인증서 관리
-- **GitHub Actions**: CI/CD 자동화
+### 🎯 **핵심 특징**
+- 🌐 **글로벌 CDN**: CloudFront를 통한 전 세계 배포
+- 🔄 **완전 자동화**: GitHub Actions 기반 CI/CD
+- 🔒 **보안**: HTTPS 자동 리다이렉트, SSL 인증서 관리
+- ⚡ **성능**: Gzip 압축, 캐싱 최적화
+- 📱 **반응형**: 모든 디바이스 지원
 
-**2. 네트워크 구성**
+---
 
-```bash
-**사용자 → CloudFront (글로벌 CDN) → S3 버킷 (정적 파일)   
-			↓ 
+## 🏗️ **아키텍처**
 
-커스텀 도메인: www.cloudjet.click  
-
- HTTPS 자동 리다이렉트**   
+### **클라우드 인프라**
 ```
-
-      ****
-
----
-
-## **�� 프로젝트 파일 구조**
-
-**핵심 파일들** 
-
-<aside>
-
-**cjet-frontend/**
-
-**└── github-secrets-setup.md      # GitHub Secrets 설정 가이드**
-
-**├── cloudfront-setup-guide.md    # CloudFront 설정 가이드**    
-
-**└── docs/                           # 설정 가이드**    
-
-**├── admin.html                       # 관리자 페이지**
-
-**├── index.html                       # 메인 페이지**
-
-**├── images/                          # 이미지 파일**
-
-**├── css/                             # 스타일시트**
-
-**│   └── storage.js                   # 로컬 스토리지 관리**
-
-**│   ├── api.js                       # API 호출 모듈**
-
-**│   ├── config.js                    # 환경별 설정 관리**
-
-**├── js/**
-
-**├── .github/workflows/deploy.yml     # GitHub Actions CI/CD**
-
-</aside>
-
----
-
-## **🔧 주요 구현 내용**
-
-**1. 환경별 설정 자동화 (js/config.js)javascript**
-
-```jsx
-***// 개발/스테이징/프로덕션 환경 자동 감지*function detectEnvironment() {
-    const hostname = window.location.hostname;
-    if (hostname.includes('localhost')) return 'development';
-    if (hostname.includes('staging')) return 'staging';
-    return 'production';}
-*// 환경별 API 엔드포인트 자동 설정*
-const config = {
-    development: { API_BASE_URL: 'http://localhost:5000/api' },
-    staging: { API_BASE_URL: 'https://api-staging.cloudjet.com/api' },
-    production: { API_BASE_URL: 'https://api.cloudjet.com/api' }};**
+사용자 → Route 53 (DNS) → CloudFront (CDN) → S3 Bucket (정적 파일)
+          ↓
+    SSL 인증서 (ACM)
+          ↓
+    커스텀 도메인: www.cloudjet.click
 ```
-
-**2. GitHub Actions CI/CD 파이프라인**
-
-```yaml
-***# 자동 배포 트리거*
-on:  
-	push:    
-		branches: [ main, production, frontend/ch ]
-		paths: [ '**' ]
-*# 배포 단계*
-steps:
-  - Checkout code
-  - Setup environment
-  - Configure AWS credentials
-  - Build frontend
-  - Optimize static files (Gzip 압축)
-  - Deploy to S3
-  - Invalidate CloudFront cache
-  - Deployment summary**
-```
-
-### **3. 정적 파일 최적화**
-
-- **HTML**: 공백 정리, 주석 유지 (팀 가독성)
-- **CSS**: 공백 정리, 개발 주석 유지
-- **JavaScript**: 개발 주석 유지, 프로덕션 로그 제거
-- **Gzip 압축**: 모든 정적 파일에 적용
-
----
-
-## **🌐 도메인 및 URL 설정**
-
-### **접속 가능한 URL들**
-
-- **커스텀 도메인**: https://www.cloudjet.click
-- **CloudFront**: https://d7aq35kj9vr3c.cloudfront.net
-- **S3 웹사이트**: http://cloudjet-frontend-test.s3-website.ap-northeast-2.amazonaws.com
-
-### **SSL 인증서**
-
-- **도메인**: *.cloudjet.click, cloudjet.click
-- **인증서 ID**: f368653a-7fde-4e0f-82b8-cb1944975f09
-- **지역**: US East (N. Virginia) - CloudFront 요구사항
-
----
-
-## **🔐 보안 및 인증 설정**
-
-### **GitHub Secrets**
-
-- AWS_ACCESS_KEY_ID: AWS IAM 사용자 액세스 키
-- AWS_SECRET_ACCESS_KEY: AWS IAM 사용자 시크릿 키
-- CLOUDFRONT_DISTRIBUTION_ID: CloudFront 배포 ID
-
-### **AWS IAM 권한**
-
-- S3 버킷 접근 권한
-- CloudFront 캐시 무효화 권한
-- Route 53 DNS 관리 권한
-
----
-
-## **�� 성능 최적화**
-
-### **캐싱 전략**
-
-- **HTML 파일**: 5분 캐시 (빠른 업데이트)
-- **CSS/JS 파일**: 24시간 캐시 (안정성)
-- **이미지/폰트**: 1년 캐시 (최적화)
-
-### **압축 및 최적화**
-
-- **Gzip 압축**: 모든 정적 파일
-- **CloudFront 압축**: 자동 Gzip/Brotli 지원
-- **HTTP/2 지원**: 최신 프로토콜 활용
-
----
-
-## **�� 배포 프로세스**
-
-### **자동 배포 흐름**
-
-1. **코드 푸시** → frontend/ch 브랜치
-2. **GitHub Actions 자동 실행** → Ubuntu 환경에서 빌드
-3. **정적 파일 최적화** → Gzip 압축, 캐시 헤더 설정
-4. **S3 동기화** → cloudjet-frontend-test 버킷에 업로드
-5. **CloudFront 캐시 무효화** → 새로운 콘텐츠 즉시 반영
-6. **글로벌 배포 완료** → 5-10분 내 전 세계 반영
-
-### **수동 배포 옵션**
-
-- **GitHub Actions**: workflow_dispatch 트리거로 수동 실행 가능
-- **CloudFront**: AWS 콘솔에서 수동 캐시 무효화 가능
-
----
-
-## **�� 비용 구조**
-
-### **월별 예상 비용**
-
-- **S3**: 약 $0.50 (정적 웹사이트 호스팅)
-- **CloudFront**: 데이터 전송량에 따라 (약 $0.085/GB)
-- **Route 53**: $0.50/월 (호스팅된 영역)
-- **ACM**: SSL 인증서 무료
-- **총 예상**: 월 $1-5 (트래픽에 따라)
-
----
-
-## **�� 주요 성과**
-
-### **기술적 성과**
-
-- ✅ **완벽한 CI/CD 파이프라인** 구축
-- ✅ **글로벌 CDN**을 통한 전 세계 배포
-- ✅ **자동 SSL 인증서** 관리
-- ✅ **커스텀 도메인** 설정 완료
-- ✅ **성능 최적화** (Gzip, 캐싱)
-
-### **비즈니스 가치**
-
-- 🌍 **글로벌 접근성**: 전 세계 어디서든 빠른 접속
-- �� **보안**: HTTPS 자동 리다이렉트
-- ⚡ **성능**: CDN을 통한 빠른 로딩
-- �� **확장성**: 트래픽 증가에 자동 대응
-- �� **비용 효율**: 서버리스 아키텍처
-
----
-
-## **�� 문서화 및 가이드**
-
-### **생성된 문서들**
-
-1. **CloudFront 설정 가이드**: AWS 콘솔에서 수동 설정 방법
-2. **GitHub Secrets 설정 가이드**: 필요한 시크릿 값 설정 방법
-3. **GitHub 저장소 연결 가이드**: 로컬 코드를 GitHub에 연결하는 방법
-
-### **팀원 교육 자료**
-
-- **배포 프로세스**: 코드 푸시부터 배포까지의 전체 흐름
-- **문제 해결**: 일반적인 오류와 해결 방법
-- **모니터링**: CloudFront 및 S3 상태 확인 방법
-
----
-
-## **�� 향후 개선 계획**
-
-### **단기 계획 (1-3개월)**
-
-- [ ]  [ ] **모니터링 도구** 구축 (CloudWatch, DataDog 등)
-- [ ]  [ ] **백업 전략** 수립 (S3 버전 관리, 크로스 리전 복제)
-- [ ]  [ ] **성능 테스트** 및 최적화
-
-### **중장기 계획 (3-12개월)**
-
-- [ ]  [ ] **다중 환경** 구축 (개발/스테이징/프로덕션)
-- [ ]  [ ] **자동화 테스트** 통합 (Jest, Cypress 등)
-- [ ]  [ ] **마이크로프론트엔드** 아키텍처 검토
-
----
-
-## **🎉 프로젝트 완료 요약**
-
-**CloudJet Frontend 클라우드 인프라 구축 프로젝트가 성공적으로 완료되었습니다!**
-
-### **핵심 성과**
-
-- �� **글로벌 CDN**: CloudFront를 통한 전 세계 배포
-- 🔄 **자동 배포**: GitHub Actions를 통한 CI/CD
-- 🔒 **보안**: HTTPS 및 SSL 인증서 자동 관리
-- ⚡ **성능**: Gzip 압축, 캐싱 최적화
-- 🎯 **브랜딩**: www.cloudjet.click 커스텀 도메인
 
 ### **기술 스택**
+| 분야 | 기술 스택 |
+|------|-----------|
+| **Frontend** | HTML5, CSS3, Vanilla JavaScript (ES6+) |
+| **Hosting** | AWS S3 Static Website |
+| **CDN** | AWS CloudFront |
+| **DNS** | AWS Route 53 |
+| **SSL** | AWS Certificate Manager (ACM) |
+| **CI/CD** | GitHub Actions |
+| **Optimization** | Gzip Compression, Cache Headers |
 
-- **AWS**: S3, CloudFront, Route 53, ACM
-- **CI/CD**: GitHub Actions
-- **프론트엔드**: HTML5, CSS3, JavaScript (ES6+)
-- **최적화**: Gzip 압축, 캐싱 전략
+---
 
-**이제 CloudJet이 전 세계 어디서든 빠르고 안전하게 접속 가능한 글로벌 서비스로 운영됩니다!** 🚀✨
-# test
+## 🚀 **주요 기능**
+
+### **사용자 기능**
+- 🔍 **항공편 검색**: 출발지/도착지/날짜별 검색
+- 📋 **예약 관리**: 예약 생성, 조회, 취소
+- 💳 **결제 시스템**: Bootpay 결제 연동
+- 👤 **사용자 관리**: 회원가입, 로그인, 프로필 관리
+- 💺 **좌석 선택**: 항공편별 좌석 현황 및 선택
+
+### **관리자 기능**
+- 📊 **대시보드**: 예약 현황, 매출 통계
+- ✈️ **항공편 관리**: 항공편 추가, 수정, 삭제
+- 👥 **사용자 관리**: 회원 정보 조회 및 관리
+- 💰 **결제 관리**: 결제 내역 조회 및 관리
+
+---
+
+## 🔧 **프로젝트 구조**
+
+```
+cjet-frontend/
+├── index.html                    # 메인 페이지
+├── admin.html                    # 관리자 페이지
+├── css/
+│   ├── styles.css               # 메인 스타일시트
+│   └── admin-styles.css         # 관리자 스타일시트
+├── js/
+│   ├── config.js               # 환경별 설정 관리
+│   ├── api.js                  # MSA API 통신 모듈
+│   ├── storage.js              # 로컬 스토리지 관리
+│   ├── auth.js                 # 인증 관리
+│   ├── flight.js               # 항공편 검색
+│   ├── booking.js              # 예약 관리
+│   ├── payment.js              # 결제 처리
+│   ├── pages.js                # 페이지 네비게이션
+│   ├── utils.js                # 유틸리티 함수
+│   └── admin-script.js         # 관리자 기능
+├── images/                      # 이미지 파일
+├── docs/                       # 설정 가이드
+├── scripts/                    # 배포 스크립트
+└── .github/workflows/          # GitHub Actions
+```
+
+---
+
+## ⚙️ **환경별 설정**
+
+### **자동 환경 감지 (js/config.js)**
+```javascript
+// 호스트명으로 환경 감지
+function detectEnvironment() {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost') return 'development';
+    if (hostname.includes('staging')) return 'staging';
+    return 'production';
+}
+
+// 환경별 API 엔드포인트 자동 설정
+const config = {
+    development: { 
+        API_BASE_URL: 'http://localhost:5000/api' 
+    },
+    staging: { 
+        API_BASE_URL: 'https://api-staging.cloudjet.com/api' 
+    },
+    production: { 
+        API_BASE_URL: 'https://api.cloudjet.click/api' 
+    }
+};
+```
+
+---
+
+## 🚀 **로컬 개발 환경 설정**
+
+### **Prerequisites**
+- 최신 웹 브라우저 (Chrome, Firefox, Safari, Edge)
+- 로컬 웹 서버 (Live Server, Python HTTP Server 등)
+- Git
+
+### **1. 프로젝트 클론**
+```bash
+git clone https://github.com/Cloud-Jet/cjet-frontend-public.git
+cd cjet-frontend-public
+```
+
+### **2. 로컬 서버 실행**
+
+#### **VS Code Live Server (추천)**
+1. VS Code에서 프로젝트 열기
+2. Live Server Extension 설치
+3. `index.html` 우클릭 → "Open with Live Server"
+4. http://localhost:5500 접속
+
+#### **Python HTTP Server**
+```bash
+# Python 3
+python -m http.server 8000
+
+# Python 2
+python -m SimpleHTTPServer 8000
+```
+
+#### **Node.js http-server**
+```bash
+npm install -g http-server
+http-server -p 8000
+```
+
+### **3. 백엔드 연결**
+로컬 개발 시 [cjet-backend-public](https://github.com/Cloud-Jet/cjet-backend-public) 실행 필요:
+```bash
+# 백엔드 서비스들이 다음 포트에서 실행되어야 함:
+# Auth Service: localhost:5001
+# Flight Service: localhost:5002
+# Booking Service: localhost:5003
+# Admin Service: localhost:5004
+# Payment Service: localhost:5005
+```
+
+---
+
+## 🌐 **배포된 환경**
+
+### **접속 URL**
+- **커스텀 도메인**: https://www.cloudjet.click
+- **CloudFront**: https://d7aq35kj9vr3c.cloudfront.net
+- **S3 웹사이트**: http://cloudjet-frontend-test.s3-website.ap-northeast-2.amazonaws.com
+
+### **SSL 인증서**
+- **도메인**: *.cloudjet.click, cloudjet.click
+- **발급자**: AWS Certificate Manager (ACM)
+- **지역**: US East (N. Virginia) - CloudFront 요구사항
+
+---
+
+## 🔄 **CI/CD 파이프라인**
+
+### **GitHub Actions 자동 배포**
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to AWS S3 and CloudFront
+
+on:
+  push:
+    branches: [ main, production, frontend/ch ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - Checkout code
+      - Configure AWS credentials
+      - Optimize static files (Gzip compression)
+      - Deploy to S3
+      - Invalidate CloudFront cache
+      - Send deployment notification
+```
+
+### **배포 프로세스**
+1. **코드 Push** → GitHub Actions 트리거
+2. **파일 최적화** → Gzip 압축, 캐시 헤더 설정
+3. **S3 동기화** → cloudjet-frontend-test 버킷 업로드
+4. **CloudFront 무효화** → 전 세계 캐시 갱신
+5. **배포 완료** → 5-10분 내 전 세계 반영
+
+---
+
+## 📊 **성능 최적화**
+
+### **캐싱 전략**
+| 파일 타입 | 캐시 시간 | 용도 |
+|----------|---------|------|
+| HTML 파일 | 5분 | 빠른 업데이트 반영 |
+| CSS/JS 파일 | 1일 | 안정성과 성능 균형 |
+| 이미지/폰트 | 1년 | 정적 리소스 최적화 |
+
+### **압축 및 최적화**
+- **Gzip 압축**: 모든 정적 파일 (60-80% 크기 절약)
+- **CloudFront 압축**: 자동 Gzip/Brotli 지원
+- **HTTP/2 지원**: 최신 프로토콜 활용
+- **조건부 요청**: ETag 기반 캐시 최적화
+
+---
+
+## 🔐 **보안**
+
+### **HTTPS 강제**
+- **SSL/TLS**: Let's Encrypt 인증서 자동 갱신
+- **리다이렉트**: HTTP → HTTPS 자동 리다이렉트
+- **HSTS**: HTTP Strict Transport Security 헤더
+
+### **환경 변수 보안**
+```bash
+# GitHub Secrets 설정
+AWS_ACCESS_KEY_ID: [AWS 액세스 키]
+AWS_SECRET_ACCESS_KEY: [AWS 시크릿 키]  
+CLOUDFRONT_DISTRIBUTION_ID: [CloudFront 배포 ID]
+```
+
+---
+
+## 🧪 **API 연동**
+
+### **MSA 백엔드 통신**
+```javascript
+// 인증이 필요한 API 호출
+async function safeApiCall(endpoint, options = {}) {
+    const user = Storage.getUser();
+    if (user && user.token) {
+        options.headers = {
+            'Authorization': `Bearer ${user.token}`,
+            'Content-Type': 'application/json',
+            ...options.headers
+        };
+    }
+    
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+    return await response.json();
+}
+```
+
+### **주요 API 엔드포인트**
+- **인증**: `/api/auth/login`, `/api/auth/signup`
+- **항공편**: `/api/flights/search`, `/api/airports`
+- **예약**: `/api/bookings`, `/api/bookings/{id}/cancel`
+- **결제**: `/api/payments/init`, `/api/payments/webhook`
+
+---
+
+## 💰 **비용 구조**
+
+### **월별 예상 비용 (AWS)**
+- **S3**: ~$0.50 (정적 웹사이트 호스팅)
+- **CloudFront**: ~$0.085/GB (데이터 전송)
+- **Route 53**: $0.50/월 (호스팅된 영역)
+- **ACM**: 무료 (SSL 인증서)
+- **총 예상**: 월 $1-5 (트래픽에 따라)
+
+---
+
+## 📱 **반응형 디자인**
+
+### **지원 디바이스**
+- **데스크톱**: 1920px 이상
+- **태블릿**: 768px - 1024px
+- **모바일**: 320px - 767px
+
+### **주요 브레이크포인트**
+```css
+/* 태블릿 */
+@media (max-width: 1024px) { ... }
+
+/* 모바일 */
+@media (max-width: 768px) { ... }
+
+/* 소형 모바일 */
+@media (max-width: 480px) { ... }
+```
+
+---
+
+## 🛠️ **개발 도구**
+
+### **권장 확장 프로그램 (VS Code)**
+- **Live Server**: 로컬 개발 서버
+- **Prettier**: 코드 포매팅
+- **ESLint**: JavaScript 린팅
+- **Auto Rename Tag**: HTML 태그 자동 수정
+
+### **디버깅**
+```javascript
+// 개발 환경에서만 디버그 로그 출력
+if (CONFIG.DEBUG) {
+    console.log('Debug:', data);
+}
+
+// 환경별 설정 확인
+console.log('Current Environment:', CONFIG.ENV);
+console.log('API Base URL:', CONFIG.API_BASE_URL);
+```
+
+---
+
+## 📝 **문서화**
+
+### **관련 문서**
+- **[CloudFront 설정 가이드](docs/cloudfront-setup-guide.md)**: AWS 콘솔 설정 방법
+- **[GitHub Secrets 설정](docs/github-secrets-setup.md)**: CI/CD 환경 변수 설정
+- **[배포 스크립트 가이드](scripts/README.md)**: 배포 프로세스 상세 설명
+
+---
+
+## 🚨 **트러블슈팅**
+
+### **일반적인 문제**
+
+#### **1. API 연결 오류**
+```javascript
+// 네트워크 연결 확인
+if (error.name === 'TypeError' && error.message.includes('fetch')) {
+    throw new Error('네트워크 연결 오류: API 서버에 접속할 수 없습니다.');
+}
+```
+
+#### **2. 캐시 문제**
+```bash
+# CloudFront 캐시 무효화
+aws cloudfront create-invalidation \
+  --distribution-id YOUR_DISTRIBUTION_ID \
+  --paths "/*"
+```
+
+#### **3. CORS 문제**
+프론트엔드와 백엔드가 다른 도메인에서 실행될 때:
+```javascript
+// 백엔드에서 CORS 설정 필요
+Access-Control-Allow-Origin: https://www.cloudjet.click
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+Access-Control-Allow-Headers: Content-Type, Authorization
+```
+
+---
+
+## 🤝 **기여 가이드라인**
+
+### **개발 워크플로우**
+1. **Fork** 및 **Clone**
+2. **Feature Branch** 생성: `git checkout -b feature/amazing-feature`
+3. **코드 작성** 및 **테스트**
+4. **Commit**: `git commit -m 'Add amazing feature'`
+5. **Push**: `git push origin feature/amazing-feature`
+6. **Pull Request** 생성
+
+### **코드 스타일**
+- **HTML**: 시맨틱 마크업 사용
+- **CSS**: BEM 방법론 권장
+- **JavaScript**: ES6+ 문법 사용
+- **들여쓰기**: 스페이스 4칸
+
+---
+
+## 🗺️ **로드맵**
+
+### **v1.0 (현재)**
+- ✅ 기본 예약 시스템 구현
+- ✅ CI/CD 파이프라인 구축
+- ✅ AWS 클라우드 배포 완료
+- ✅ 반응형 디자인 적용
+
+### **v1.1 (계획)**
+- 🔄 PWA (Progressive Web App) 지원
+- 🔄 다국어 지원 (i18n)
+- 🔄 다크모드 테마
+- 🔄 성능 최적화 (Lazy Loading)
+
+### **v2.0 (미래)**
+- 🚀 React/Vue 마이그레이션
+- 🚀 실시간 알림 시스템
+- 🚀 AI 추천 시스템
+- 🚀 소셜 로그인 지원
+
+---
+
+## 📞 **지원**
+
+- **라이브 데모**: [https://www.cloudjet.click](https://www.cloudjet.click)
+- **GitHub Issues**: [Frontend Issues](https://github.com/Cloud-Jet/cjet-frontend-public/issues)
+- **관련 프로젝트**: [Backend Repository](https://github.com/Cloud-Jet/cjet-backend-public)
+- **K8s 배포**: [Kubernetes Repository](https://github.com/Cloud-Jet/cjet-k8s-public)
+
+---
+
+**⭐ 이 프로젝트가 유용하다면 Star를 눌러주세요!** ⭐
