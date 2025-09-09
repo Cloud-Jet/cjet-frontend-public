@@ -1,0 +1,24 @@
+name: SonarCloud Analysis - Frontend
+on:
+  push:
+    branches: 
+      - main
+      - develop
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for better analysis
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub에서 자동 제공
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}     # 이미 설정한 토큰
