@@ -413,6 +413,40 @@ async function startPayment() {
         return;
     }
 
+    // 부트페이 결제창 스타일 적용
+    const style = document.createElement('style');
+    style.innerHTML = `
+        /* 배너 및 다른 요소들이 결제창에 영향을 주지 않도록 처리 */
+        #bootpay-payment-window-id {
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 auto !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 520px !important;  /* 결제 창 가로 크기를 더 넓게 설정 */
+            height: 750px !important; /* 결제 창 세로 크기 */
+            position: fixed !important;  /* 화면에 고정 */
+            top: 50% !important;  /* 화면 중앙에 배치 */
+            left: 50% !important;  /* 화면 중앙에 배치 */
+            transform: translate(-50%, -50%) !important; /* 정확하게 화면 중앙에 맞춤 */
+            z-index: 9999 !important;  /* 배너 위에 표시되도록 */
+            border: none !important;  /* 테두리 제거 */
+        }
+
+        /* iframe 크기 조정 */
+        #bootpay-payment-window-id iframe {
+            display: block !important;
+            margin: 0 !important;
+            width: 100% !important;   /* iframe 가로 크기를 결제 창 크기에 맞춤 */
+            height: 100% !important;  /* iframe 세로 크기를 결제 창 크기에 맞춤 */
+            background: #fff !important;
+            border-radius: 12px !important;
+        }
+    `;
+    document.head.appendChild(style);
+
     try {
         const totalAmount = selectedFlight.price * bookingData.passengers.length;
 

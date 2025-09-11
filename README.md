@@ -70,26 +70,28 @@ AWS 클라우드 인프라와 완전 자동화된 CI/CD 파이프라인을 통�
 ## 🔧 **프로젝트 구조**
 
 ```
-cjet-frontend/
+cjet-frontend-public/
 ├── index.html                    # 메인 페이지
 ├── admin.html                    # 관리자 페이지
 ├── css/
 │   ├── styles.css               # 메인 스타일시트
-│   └── admin-styles.css         # 관리자 스타일시트
+│   └── admin-styles.css         # 관리자 스타일시트  
 ├── js/
-│   ├── config.js               # 환경별 설정 관리
-│   ├── api.js                  # MSA API 통신 모듈
+│   ├── config.js               # 환경별 설정 관리 (development/staging/production)
+│   ├── api.js                  # MSA API 통신 모듈 (JWT 토큰 자동 처리)
+│   ├── app.js                  # 메인 애플리케이션 로직
 │   ├── storage.js              # 로컬 스토리지 관리
 │   ├── auth.js                 # 인증 관리
 │   ├── flight.js               # 항공편 검색
 │   ├── booking.js              # 예약 관리
-│   ├── payment.js              # 결제 처리
+│   ├── modal.js                # 모달 관리
 │   ├── pages.js                # 페이지 네비게이션
 │   ├── utils.js                # 유틸리티 함수
 │   └── admin-script.js         # 관리자 기능
 ├── images/                      # 이미지 파일
 ├── docs/                       # 설정 가이드
 ├── scripts/                    # 배포 스크립트
+├── sonar-project.properties    # SonarCloud 설정
 └── .github/workflows/          # GitHub Actions
 ```
 
@@ -99,24 +101,37 @@ cjet-frontend/
 
 ### **자동 환경 감지 (js/config.js)**
 ```javascript
-// 호스트명으로 환경 감지
+// 실제 구현된 환경 감지 로직
 function detectEnvironment() {
     const hostname = window.location.hostname;
-    if (hostname === 'localhost') return 'development';
-    if (hostname.includes('staging')) return 'staging';
-    return 'production';
+    
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'development';
+    } 
+    else if (hostname.includes('.cloudfront.net') || hostname.includes('cloudjet')) {
+        return 'production';
+    } 
+    else {
+        return 'staging';
+    }
 }
 
-// 환경별 API 엔드포인트 자동 설정
+// 실제 구현된 환경별 설정
 const config = {
-    development: { 
-        API_BASE_URL: 'http://localhost:5000/api' 
+    development: {
+        API_BASE_URL: 'http://localhost:5000/api',
+        DEBUG: true,
+        CACHE_ENABLED: false
     },
-    staging: { 
-        API_BASE_URL: 'https://api-staging.cloudjet.com/api' 
+    staging: {
+        API_BASE_URL: 'https://api-staging.cloudjet.com/api',
+        DEBUG: true,
+        CACHE_ENABLED: true
     },
-    production: { 
-        API_BASE_URL: 'https://api.cloudjet.click/api' 
+    production: {
+        API_BASE_URL: 'https://api.cloudjet.click/api',
+        DEBUG: false,
+        CACHE_ENABLED: true
     }
 };
 ```
@@ -162,12 +177,14 @@ http-server -p 8000
 ### **3. 백엔드 연결**
 로컬 개발 시 [cjet-backend-public](https://github.com/Cloud-Jet/cjet-backend-public) 실행 필요:
 ```bash
-# 백엔드 서비스들이 다음 포트에서 실행되어야 함:
-# Auth Service: localhost:5001
-# Flight Service: localhost:5002
-# Booking Service: localhost:5003
-# Admin Service: localhost:5004
-# Payment Service: localhost:5005
+# 백엔드 마이크로서비스들이 다음 포트에서 실행되어야 함:
+# Auth Service: localhost:5001       (/api/auth/*)
+# Flight Service: localhost:5002     (/api/flights/*)
+# Booking Service: localhost:5003    (/api/bookings/*)
+# Admin Service: localhost:5004      (/api/admin/*)
+# Payment Service: localhost:5005    (/api/payments/*)
+
+# config.js에서 자동으로 http://localhost:5000/api로 API_BASE_URL 설정됨
 ```
 
 ---
@@ -285,29 +302,38 @@ sonar-scanner \
 
 ## 🧪 **API 연동**
 
-### **MSA 백엔드 통신**
+### **MSA 백엔드 통신 (api.js)**
 ```javascript
-// 인증이 필요한 API 호출
+// 실제 구현된 API 호출 함수 (JWT 토큰 자동 처리)
 async function safeApiCall(endpoint, options = {}) {
-    const user = Storage.getUser();
-    if (user && user.token) {
-        options.headers = {
-            'Authorization': `Bearer ${user.token}`,
+    const url = `${API_BASE_URL}${endpoint}`;
+    
+    const config = {
+        headers: {
             'Content-Type': 'application/json',
             ...options.headers
-        };
+        },
+        ...options
+    };
+    
+    // 인증 토큰 자동 추가
+    const user = Storage.getUser();
+    if (user && user.token) {
+        config.headers['Authorization'] = `Bearer ${user.token}`;
     }
     
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
-    return await response.json();
+    const response = await fetch(url, config);
+    // HTML 응답 체크, 빈 응답 처리 등 포함
+    return response;
 }
 ```
 
-### **주요 API 엔드포인트**
-- **인증**: `/api/auth/login`, `/api/auth/signup`
-- **항공편**: `/api/flights/search`, `/api/airports`
-- **예약**: `/api/bookings`, `/api/bookings/{id}/cancel`
-- **결제**: `/api/payments/init`, `/api/payments/webhook`
+### **실제 구현된 API 호출**
+- **인증**: `/api/auth/login`, `/api/auth/signup`, `/api/auth/profile`
+- **항공편**: `/api/flights/search`, `/api/flights/airports`, `/api/flights/featured`
+- **예약**: `/api/bookings` (POST/GET), `/api/bookings/occupied-seats/{id}`
+- **결제**: `/api/payments/init`, `/api/payments/attach-booking`
+- **관리자**: `/api/admin/flights`, `/api/admin/bookings`, `/api/admin/discounts`
 
 ---
 
