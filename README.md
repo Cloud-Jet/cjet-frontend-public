@@ -4,6 +4,8 @@
 > HTML5 + Vanilla JS + AWS CloudFront를 활용한 글로벌 정적 웹사이트
 
 [![CI/CD](https://github.com/Cloud-Jet/cjet-frontend-public/workflows/Deploy/badge.svg)](https://github.com/Cloud-Jet/cjet-frontend-public/actions)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Cloud-Jet_cjet-frontend-public&metric=alert_status)](https://sonarcloud.io/project/overview?id=Cloud-Jet_cjet-frontend-public)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Cloud-Jet_cjet-frontend-public&metric=security_rating)](https://sonarcloud.io/project/overview?id=Cloud-Jet_cjet-frontend-public)
 [![Live Demo](https://img.shields.io/badge/Live-Demo-blue)](https://www.cloudjet.click)
 
 ---
@@ -16,6 +18,7 @@ AWS 클라우드 인프라와 완전 자동화된 CI/CD 파이프라인을 통�
 ### 🎯 **핵심 특징**
 - 🌐 **글로벌 CDN**: CloudFront를 통한 전 세계 배포
 - 🔄 **완전 자동화**: GitHub Actions 기반 CI/CD
+- 📊 **코드 품질**: SonarCloud 정적 분석 + Slack 알림 연동
 - 🔒 **보안**: HTTPS 자동 리다이렉트, SSL 인증서 관리
 - ⚡ **성능**: Gzip 압축, 캐싱 최적화
 - 📱 **반응형**: 모든 디바이스 지원
@@ -42,6 +45,7 @@ AWS 클라우드 인프라와 완전 자동화된 CI/CD 파이프라인을 통�
 | **DNS** | AWS Route 53 |
 | **SSL** | AWS Certificate Manager (ACM) |
 | **CI/CD** | GitHub Actions |
+| **Code Quality** | SonarCloud, Slack Notifications |
 | **Optimization** | Gzip Compression, Cache Headers |
 
 ---
@@ -244,6 +248,37 @@ jobs:
 AWS_ACCESS_KEY_ID: [AWS 액세스 키]
 AWS_SECRET_ACCESS_KEY: [AWS 시크릿 키]  
 CLOUDFRONT_DISTRIBUTION_ID: [CloudFront 배포 ID]
+SLACK_WEBHOOK_URL: [Slack 웹훅 URL]
+SONAR_TOKEN: [SonarCloud 토큰]
+```
+
+---
+
+## 📊 **코드 품질 관리**
+
+### **SonarCloud 정적 분석**
+- **품질 게이트**: PR 머지 전 자동 코드 품질 검증
+- **보안 스캔**: JavaScript 보안 취약점 및 악성 코드 검사
+- **코드 품질**: 코드 복잡도, 중복도, 유지보수성 측정
+- **최적화 제안**: 성능 향상을 위한 코드 개선 가이드
+- **실시간 모니터링**: [SonarCloud 대시보드](https://sonarcloud.io/project/overview?id=Cloud-Jet_cjet-frontend-public)
+
+### **Slack 통합 알림**
+- **채널**: `#ci-cd-alerts`
+- **알림 이벤트**:
+  - ✅ 코드 품질 검사 성공/실패
+  - 🚀 배포 상태 (CloudFront 업데이트 포함)
+  - ⚠️ 보안 취약점 발견 알림
+  - 📊 품질 게이트 통과/실패
+
+### **품질 메트릭 로컬 확인**
+```bash
+# SonarQube 로컬 스캔 실행
+sonar-scanner \
+  -Dsonar.projectKey=Cloud-Jet_cjet-frontend-public \
+  -Dsonar.organization=cloud-jet \
+  -Dsonar.host.url=https://sonarcloud.io \
+  -Dsonar.login=$SONAR_TOKEN
 ```
 
 ---
